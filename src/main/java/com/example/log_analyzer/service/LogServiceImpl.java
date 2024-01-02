@@ -1,6 +1,7 @@
 package com.example.log_analyzer.service;
 
 import com.example.log_analyzer.shared.LogResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
+@Slf4j
 public class LogServiceImpl implements LogService {
 
-    @Value("${filepath}")
+    @Value("${filePath}")
     String filePath;
 
     @Value("${threadSize}")
@@ -29,8 +31,8 @@ public class LogServiceImpl implements LogService {
         Map<String, Integer> browserCounts = new ConcurrentHashMap<>();
         Map<String, Map<String, Integer>> dayAndTimeCounts = new ConcurrentHashMap<>();
 
-        try (  ExecutorService executor = Executors.newFixedThreadPool(threadSize);
-               BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(threadSize);
+             BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 executor.execute(new ProcessLineTask(line, dayAndTimeCounts, countryCounts, osCounts, browserCounts));
@@ -61,6 +63,7 @@ public class LogServiceImpl implements LogService {
 
         @Override
         public void run() {
+            log.info("Running on thread {}", Thread.currentThread());
             // Split the line by commas
             String[] columns = line.split(",");
 

@@ -1,0 +1,14 @@
+<div id="chart">
+  <apx-chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [dataLabels]="chartOptions.dataLabels"
+    [plotOptions]="chartOptions.plotOptions"
+    [title]="chartOptions.title"
+  ></apx-chart>
+</div>
+
+<h1 style="text-align: center;">Session By Operating System</h1>
+
+
+<div echarts [options]="option" class="demo-chart"></div>
