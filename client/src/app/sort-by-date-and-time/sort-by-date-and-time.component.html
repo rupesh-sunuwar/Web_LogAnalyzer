@@ -13,15 +13,29 @@
 </div>
 
 <div class="col-12">
-  <h1 style="text-align: center;">Session By Operating System</h1>
+  <div class="col-8">
+    <h1 style="text-align: center;">Session By Browsers</h1>
 
-  <div echarts [options]="option" class="demo-chart"></div>
+    <div echarts [options]="option" class="demo-chart"></div>
+  </div>
+  <div  class="col-4">
+    <div echarts [options]="pieOption" class="demo-chart"></div>
+  </div>
+  <div>
+
+  </div>
 </div>
 
 <div class="col-12">
   <h1 style="text-align: center;">Users By Countries(Ip address)</h1>
   <div echarts [options]="mapOption"></div>
 </div>
+
+<div class="col-12">
+  <h1 style="text-align: center;">Bar Graph By Countries</h1>
+  <div echarts [options]="barOption"></div>
+</div>
+
 
 
 

@@ -14,11 +14,6 @@ export type ChartOptions = {
   plotOptions: any;
 };
 
-export  type EchartsOption = {
-  tooltip: any;
-  legend: any;
-  series: any;
-}
 
 @Component({
   selector: 'app-sort-by-date-and-time',
@@ -32,6 +27,10 @@ export class SortByDateAndTimeComponent implements OnInit {
   data!: any;
 
   mapOption: EChartsOption = {};
+
+  pieOption: EChartsOption = {};
+
+  barOption:EChartsOption={};
 
   @ViewChild("chart") chart: any;
   public chartOptions!: Partial<ChartOptions>;
@@ -97,6 +96,8 @@ export class SortByDateAndTimeComponent implements OnInit {
         this.transformDataForChart();
         this.mapFunction();
         this.transformDataToDoughnoutChart();
+        this.mapPieChart();
+        this.mapBarGraph();
       },
       (error) => {
         // Handle errors if needed
@@ -150,15 +151,18 @@ export class SortByDateAndTimeComponent implements OnInit {
   }
 
   transformDataToDoughnoutChart(): void {
-    const browsers = Object.keys(this.data.browsers);
-    const doughnutData = browsers.map(browser => {
-      const browserData = this.data.browsers[browser]; // Assuming the browser data is a number
 
-      return {
-        name: browser.toUpperCase(),
-        value: browserData,
-      };
-    });
+    const browserToInclude = ['EDGE', 'OPERA', 'CHROME', 'FIREFOX', 'BRAVE', 'SAFARI']
+    const browsers = Object.keys(this.data.browsers);
+    const doughnutData = browsers.filter(browser => browserToInclude.includes(browser.toUpperCase()))
+      .map(browser => {
+        const browserData = this.data.browsers[browser]; // Assuming the browser data is a number
+
+        return {
+          name: browser.toUpperCase(),
+          value: browserData,
+        };
+      });
 
     this.option = {
       tooltip: {
@@ -180,7 +184,7 @@ export class SortByDateAndTimeComponent implements OnInit {
             borderWidth: 2
           },
           label: {
-            show: true,
+            show: false,
             position: 'center'
           },
           emphasis: {
@@ -204,6 +208,8 @@ export class SortByDateAndTimeComponent implements OnInit {
     const data = Object.keys(this.data.countries).map((name) => {
       return {name, value: this.data.countries[name]};
     });
+
+    console.log(data);
 
     echarts.registerMap('USA', worldMap, {
       Alaska: {
@@ -256,4 +262,85 @@ export class SortByDateAndTimeComponent implements OnInit {
     } as EChartsOption;
 
   }
+
+  mapPieChart() {
+    const data = Object.keys(this.data.operatingSystems).map((name) => {
+      return {name, value: this.data.operatingSystems[name]};
+    });
+
+    this.pieOption = {
+      title: {
+        text: 'Users By Operating System',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: '50%',
+          data: data,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  mapBarGraph() {
+
+    const countriesToInclude= ['INDIA', 'NEPAL', 'BANGLADESH', 'CHINA'];
+    const countries = Object.keys(this.data.countries);
+    const graphData = countries.filter(countries => countriesToInclude.includes(countries.toUpperCase()))
+      .map(countries => {
+        const countriesData = this.data.countries[countries]; // Assuming the browser data is a number
+
+        return {
+          name: countries.toUpperCase(),
+          value: countriesData,
+        };
+      });
+
+    this.barOption = {
+      dataset: {
+        source: [['value', 'name'], ...graphData.map(item => [item.value, item.name])]
+      },
+      grid: { containLabel: true },
+      xAxis: { name: 'numbers' },
+      yAxis: { type: 'category' },
+      visualMap: {
+        orient: 'horizontal',
+        left: 'center',
+        min: Math.min(...graphData.map(item => item.value)),
+        max: Math.max(...graphData.map(item => item.value)),
+        text: ['High Score', 'Low Score'],
+        dimension: 0,
+        inRange: {
+          color: ['#65B581', '#FFCE34', '#FD665F']
+        }
+      },
+      series: [{
+        type: 'bar',
+        encode: {
+          x: 'value',
+          y: 'name'
+        }
+      }]
+    };
+  }
+
+
 }
+
+
