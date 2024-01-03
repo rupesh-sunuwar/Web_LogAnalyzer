@@ -1,14 +1,29 @@
-<div id="chart">
-  <apx-chart
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [dataLabels]="chartOptions.dataLabels"
-    [plotOptions]="chartOptions.plotOptions"
-    [title]="chartOptions.title"
-  ></apx-chart>
+
+<div>
+  <h1 style="text-align: center;">Users By Time of Day.</h1>
+  <div id="chart">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [dataLabels]="chartOptions.dataLabels"
+      [plotOptions]="chartOptions.plotOptions"
+      [title]="chartOptions.title"
+    ></apx-chart>
+  </div>
 </div>
 
-<h1 style="text-align: center;">Session By Operating System</h1>
+<div class="col-12">
+  <h1 style="text-align: center;">Session By Operating System</h1>
+
+  <div echarts [options]="option" class="demo-chart"></div>
+</div>
+
+<div class="col-12">
+  <h1 style="text-align: center;">Users By Countries(Ip address)</h1>
+  <div echarts [options]="mapOption"></div>
+</div>
 
 
-<div echarts [options]="option" class="demo-chart"></div>
+
+
+

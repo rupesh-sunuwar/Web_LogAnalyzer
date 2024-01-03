@@ -7,13 +7,11 @@ import {SortByDateAndTimeComponent} from './sort-by-date-and-time/sort-by-date-a
 import {HttpClientModule} from "@angular/common/http";
 import {NgApexchartsModule} from "ng-apexcharts";
 import {NgxEchartsModule} from "ngx-echarts";
-import { SessionByOsComponent } from './session-by-os/session-by-os.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SortByDateAndTimeComponent,
-    SessionByOsComponent
+    SortByDateAndTimeComponent
   ],
   imports: [
     BrowserModule,

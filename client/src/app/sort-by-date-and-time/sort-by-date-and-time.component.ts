@@ -2,6 +2,9 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {LogServiceService} from "../service/log-service.service";
 import {LogResponse} from "../entity/model";
 import {EChartsOption} from "echarts";
+import * as echarts from 'echarts';
+// @ts-ignore
+import * as worldMap from "src/assets/globalMap/custom.geo.json";
 
 export type ChartOptions = {
   series: any;
@@ -11,10 +14,10 @@ export type ChartOptions = {
   plotOptions: any;
 };
 
-export  type EchartsOption={
-  tooltip:any;
-  legend:any;
-  series:any;
+export  type EchartsOption = {
+  tooltip: any;
+  legend: any;
+  series: any;
 }
 
 @Component({
@@ -28,49 +31,14 @@ export class SortByDateAndTimeComponent implements OnInit {
 
   data!: any;
 
+  mapOption: EChartsOption = {};
+
   @ViewChild("chart") chart: any;
   public chartOptions!: Partial<ChartOptions>;
 
   ngOnInit(): void {
     this.fetchData();
-    this.option = {
-      tooltip: {
-        trigger: 'item'
-      },
-      legend: {
-        top: '5%',
-        left: 'center'
-      },
-      series: [
-        {
-          name: 'Access From',
-          type: 'pie',
-          radius: ['40%', '70%'],
-          avoidLabelOverlap: false,
-          itemStyle: {
-            borderRadius: 10,
-            borderColor: '#fff',
-            borderWidth: 2
-          },
-          label: {
-            show: true,
-            position: 'center'
-          },
-          emphasis: {
-            label: {
-              show: true,
-              fontSize: 40,
-              fontWeight: 'bold'
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: [
-          ]
-        }
-      ]
-    };
+
 
     this.chartOptions = {
       series: [],
@@ -113,9 +81,6 @@ export class SortByDateAndTimeComponent implements OnInit {
       },
       dataLabels: {
         enabled: false
-      },
-      title: {
-        text: "Users By time of day."
       }
     };
   }
@@ -130,6 +95,7 @@ export class SortByDateAndTimeComponent implements OnInit {
         this.data = response;
         console.log(this.data);
         this.transformDataForChart();
+        this.mapFunction();
         this.transformDataToDoughnoutChart();
       },
       (error) => {
@@ -194,31 +160,100 @@ export class SortByDateAndTimeComponent implements OnInit {
       };
     });
 
-    this.option.series = [{
-      name: 'Access From',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 10,
-        borderColor: '#fff',
-        borderWidth: 2
+    this.option = {
+      tooltip: {
+        trigger: 'item'
       },
-      label: {
-        show: false,
-        position: 'center'
+      legend: {
+        top: '5%',
+        left: 'center'
       },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: 40,
-          fontWeight: 'bold'
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: true,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 40,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: doughnutData
+        }
+      ]
+    };
+  }
+
+  mapFunction(): void {
+
+    const data = Object.keys(this.data.countries).map((name) => {
+      return {name, value: this.data.countries[name]};
+    });
+
+    echarts.registerMap('USA', worldMap, {
+      Alaska: {
+        left: -131,
+        top: 25,
+        width: 15
+      },
+      Hawaii: {
+        left: -110,
+        top: 28,
+        width: 5
+      },
+      'Puerto Rico': {
+        left: -76,
+        top: 26,
+        width: 2
+      }
+    });
+    this.mapOption = {
+      tooltip: {
+        trigger: 'item',
+        showDelay: 0,
+        transitionDuration: 0.2
+      },
+      toolbox: {
+        show: true,
+        //orient: 'vertical',
+        left: 'left',
+        top: 'top',
+        feature: {
+          dataView: {readOnly: false},
+          restore: {},
+          saveAsImage: {}
         }
       },
-      labelLine: {
-        show: false
-      },
-      data: doughnutData,
-    }];
+      series: [
+        {
+          name: 'Visitor By Country',
+          type: 'map',
+          roam: true,
+          map: 'USA',
+          itemStyle: {
+            emphasis: {
+              areaColor: '#29e6f8',
+            },
+          },
+          data: data
+        }
+      ]
+    } as EChartsOption;
+
   }
 }
